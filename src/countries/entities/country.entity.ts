@@ -1,6 +1,7 @@
 import { BaseEntity } from "src/core/entities/base.entity";
 import { File } from "src/files/entities/file.entity";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { University } from "src/universities/entities/university.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 
 @Entity()
 export class Country extends BaseEntity {
@@ -13,4 +14,7 @@ export class Country extends BaseEntity {
 
     @Column({ type: 'simple-array' })
     states: string[]
+
+    @OneToMany(() => University, university => university.country)
+    universities: University[]
 }

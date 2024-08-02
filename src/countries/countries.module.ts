@@ -14,5 +14,6 @@ import { FilesModule } from 'src/files/files.module';
   ],
   controllers: [CountriesController],
   providers: [CountriesService],
+  exports: [CountriesService],
 })
 export class CountriesModule { }

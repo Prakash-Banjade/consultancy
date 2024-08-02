@@ -1,6 +1,12 @@
 import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "src/auth/auth.module";
+import { BritishCounsilModule } from "src/british-counsil/british-counsil.module";
+import { CategoriesModule } from "src/categories/categories.module";
+import { CountriesModule } from "src/countries/countries.module";
+import { CoursesModule } from "src/courses/courses.module";
+import { FilesModule } from "src/files/files.module";
+import { UniversitiesModule } from "src/universities/universities.module";
 import { UsersModule } from "src/users/users.module";
 
 export function setupSwagger(app: INestApplication): void {
@@ -21,7 +27,16 @@ export function setupSwagger(app: INestApplication): void {
         .build();
 
     const document = SwaggerModule.createDocument(app, config, {
-        include: [AuthModule, UsersModule],
+        include: [
+            AuthModule,
+            UsersModule,
+            FilesModule,
+            BritishCounsilModule,
+            CategoriesModule,
+            CoursesModule,
+            CountriesModule,
+            UniversitiesModule,
+        ],
     });
 
     SwaggerModule.setup('api', app, document, {

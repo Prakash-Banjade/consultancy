@@ -26,6 +26,8 @@ import { StudentsModule } from './students/students.module';
 import { FilesModule } from './files/files.module';
 import { CountriesModule } from './countries/countries.module';
 import { CategoriesModule } from './categories/categories.module';
+import { CoursesModule } from './courses/courses.module';
+import { UniversitiesModule } from './universities/universities.module';
 
 @Module({
   imports: [
@@ -84,6 +86,8 @@ import { CategoriesModule } from './categories/categories.module';
     StudentsModule,
     CountriesModule,
     CategoriesModule,
+    CoursesModule,
+    UniversitiesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -9,7 +9,7 @@ import { UsersModule } from './users/users.module';
 import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AbilitiesGuard } from './casl/guards/abilities.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -22,6 +22,9 @@ import { join } from 'path';
 import { ImagesModule } from './images/images.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { BritishCounsilModule } from './british-counsil/british-counsil.module';
+import { StudentsModule } from './students/students.module';
+import { FilesModule } from './files/files.module';
+import { CountriesModule } from './countries/countries.module';
 
 @Module({
   imports: [
@@ -47,25 +50,38 @@ import { BritishCounsilModule } from './british-counsil/british-counsil.module';
       ttl: 60000, // 10 requests per minute
       limit: 10,
     }]),
-    CacheModule.register({
-      ttl: 5, // seconds
-      max: 10, // maximum number of items in cache
-      // @ts-ignore
-      store: async () => await redisStore({
-        // Store-specific configuration:
-        socket: {
-          host: process.env.REDIS_HOST,
-          port: +process.env.REDIS_PORT,
-        }
-      })
-    }),
+    // CacheModule.register({
+    //   ttl: 5, // seconds
+    //   max: 10, // maximum number of items in cache
+    //   // @ts-ignore
+    //   store: async () => await redisStore({
+    //     // Store-specific configuration:
+    //     socket: {
+    //       host: process.env.REDIS_HOST,
+    //       port: +process.env.REDIS_PORT,
+    //     }
+    //   })
+    // }),
     UsersModule,
     AuthModule,
     CaslModule,
     MailModule,
     ImagesModule,
+    FilesModule,
+    RouterModule.register([
+      {
+        path: 'upload',
+        module: FilesModule,
+      },
+      // {
+      //   path: 'upload',
+      //   module: ImagesModule,
+      // }
+    ]),
     AccountsModule,
     BritishCounsilModule,
+    StudentsModule,
+    CountriesModule,
   ],
   controllers: [AppController],
   providers: [
@@ -82,10 +98,10 @@ import { BritishCounsilModule } from './british-counsil/british-counsil.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard, // global rate limiting, but can be overriden in route level
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor, // global caching, only get requests will be cached
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor, // global caching, only get requests will be cached
+    // },
   ],
 })
 export class AppModule { }

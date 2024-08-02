@@ -33,3 +33,9 @@ export enum Gender {
     FEMALE = 'female',
     OTHER = 'other',
 }
+
+export enum EIeltsType {
+    GENERAL = 'general',
+    ACADEMIC = 'academic',
+    UKVI = 'ukvi',
+}

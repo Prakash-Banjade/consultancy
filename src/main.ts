@@ -29,6 +29,7 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.use(cookieParser());
+  app.setGlobalPrefix('api')
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))
 
@@ -36,7 +37,7 @@ async function bootstrap() {
   setupSwagger(app);
 
   // setup morgan
-  setupMorgan(app);
+  // setupMorgan(app);
 
 
   app.listen(PORT).then(() => {

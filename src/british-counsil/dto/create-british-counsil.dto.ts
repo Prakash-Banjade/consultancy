@@ -21,20 +21,20 @@ export class CreateBritishCounsilDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsEnum(EIeltsType)
-    ielts_type: EIeltsType
+    ieltsType: EIeltsType
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    ph_no: string;
+    phNo: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsDateString()
-    ielts_booking_date: string;
+    ieltsBookingDate: string;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsUUID()
-    passprotAttatchment_id: string;
+    passportAttatchmentId: string;
 }

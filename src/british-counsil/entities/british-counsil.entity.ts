@@ -15,15 +15,15 @@ export class BritishCounsil extends BaseEntity {
     email: string
 
     @Column({ type: 'enum', enum: EIeltsType })
-    ielts_type: EIeltsType
+    ieltsType: EIeltsType
 
     @Column({ type: 'varchar' })
-    ph_no: string;
+    phNo: string;
 
     @Column({ type: 'datetime' })
-    ielts_booking_date: string;
+    ieltsBookingDate: string; 
 
     @OneToOne(() => Image)
     @JoinColumn({ name: 'passprotAttatchment' })
-    passprotAttatchment: string;
+    passportAttatchment: Image; 
 }

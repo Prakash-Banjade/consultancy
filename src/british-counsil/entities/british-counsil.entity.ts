@@ -1,6 +1,6 @@
 import { BaseEntity } from "src/core/entities/base.entity";
 import { EIeltsType } from "src/core/types/global.types";
-import { Image } from "src/images/entities/image.entity";
+import { File } from "src/files/entities/file.entity";
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 
 @Entity()
@@ -21,9 +21,9 @@ export class BritishCounsil extends BaseEntity {
     phNo: string;
 
     @Column({ type: 'datetime' })
-    ieltsBookingDate: string; 
+    ieltsBookingDate: string;
 
-    @OneToOne(() => Image)
+    @OneToOne(() => File)
     @JoinColumn({ name: 'passprotAttatchment' })
-    passportAttatchment: Image; 
+    passportAttatchment: File;
 }

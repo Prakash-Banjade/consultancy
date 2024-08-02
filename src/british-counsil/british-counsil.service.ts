@@ -6,13 +6,13 @@ import { BritishCounsil } from './entities/british-counsil.entity';
 import { Brackets, Repository } from 'typeorm';
 import { BritishCounsilQueryDto } from './dto/british-counsil-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
-import { ImagesService } from 'src/images/images.service';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class BritishCounsilService {
   constructor(
     @InjectRepository(BritishCounsil) private britishCounsilRepo: Repository<BritishCounsil>,
-    private readonly imageService: ImagesService,
+    private readonly fileService: FilesService,
   ) { }
 
   async create(createBritishCounsilDto: CreateBritishCounsilDto) {
@@ -21,7 +21,8 @@ export class BritishCounsilService {
     })
     if (existingWitSameName) throw new ConflictException('British Counsil with this name already exists');
 
-    const passportAttatchment = await this.imageService.findOne(createBritishCounsilDto.passportAttatchmentId);
+    // const passportAttatchment = await this.imageService.findOne(createBritishCounsilDto.passportAttatchmentId);
+    const passportAttatchment = await this.fileService.findOne(createBritishCounsilDto.passportAttatchmentId);
 
     const britishCounsil = this.britishCounsilRepo.create({
       ...createBritishCounsilDto,

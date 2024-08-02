@@ -21,6 +21,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ImagesModule } from './images/images.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { BritishCounsilModule } from './british-counsil/british-counsil.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { AccountsModule } from './accounts/accounts.module';
     MailModule,
     ImagesModule,
     AccountsModule,
+    BritishCounsilModule,
   ],
   controllers: [AppController],
   providers: [

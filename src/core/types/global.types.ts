@@ -28,7 +28,7 @@ export enum AuthProvider {
     CREDENTIALS = 'credentials',
 }
 
-export enum Gender {
+export enum EGender {
     MALE = 'male',
     FEMALE = 'female',
     OTHER = 'other',
@@ -38,4 +38,13 @@ export enum EIeltsType {
     GENERAL = 'general',
     ACADEMIC = 'academic',
     UKVI = 'ukvi',
+}
+
+export enum EMaritalStatus {
+    MARRIED = 'married',
+    UNMARRIED = 'unmarried',
+    DIVORCED = 'divorced',
+    WIDOWED = 'widowed',
+    SEPARATED = 'separated',
+    OTHER = 'other',
 }

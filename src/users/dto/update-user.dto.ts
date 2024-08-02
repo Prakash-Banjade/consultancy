@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID, Length } from 'class-validator';
 import { MemoryStoredFile } from 'nestjs-form-data';
-import { Gender } from 'src/core/types/global.types';
+import { EGender } from 'src/core/types/global.types';
 
 export class UpdateUserDto {
     @ApiPropertyOptional({ type: 'string', description: 'First name of the user' })
@@ -21,10 +21,10 @@ export class UpdateUserDto {
     @IsOptional()
     phone?: string
 
-    @ApiPropertyOptional({ type: 'enum', enum: Gender, enumName: 'Gender' })
-    @IsEnum(Gender)
+    @ApiPropertyOptional({ type: 'enum', enum: EGender, enumName: 'EGender' })
+    @IsEnum(EGender)
     @IsOptional()
-    gender?: Gender
+    gender?: EGender
 
     @ApiPropertyOptional({ type: 'string', format: 'date-time', description: 'Date of Birth' })
     @IsDateString({ strict: true })

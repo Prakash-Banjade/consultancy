@@ -25,6 +25,7 @@ import { BritishCounsilModule } from './british-counsil/british-counsil.module';
 import { StudentsModule } from './students/students.module';
 import { FilesModule } from './files/files.module';
 import { CountriesModule } from './countries/countries.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { CountriesModule } from './countries/countries.module';
     BritishCounsilModule,
     StudentsModule,
     CountriesModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [

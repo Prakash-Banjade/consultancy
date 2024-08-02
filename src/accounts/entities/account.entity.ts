@@ -5,6 +5,7 @@ import { AuthProvider, Roles } from "src/core/types/global.types";
 import { BadRequestException } from "@nestjs/common";
 import { User } from "src/users/entities/user.entity";
 import { Image } from "src/images/entities/image.entity";
+import { File } from "src/files/entities/file.entity";
 
 @Entity()
 export class Account extends BaseEntity {
@@ -38,6 +39,9 @@ export class Account extends BaseEntity {
 
     @OneToMany(() => Image, image => image.uploadedBy)
     images: Image[]
+
+    @OneToMany(() => File, file => file.uploadedBy)
+    files: File[]
     
     @BeforeInsert()
     hashPassword() {

@@ -1,7 +1,7 @@
 {
   "name": "nestjs_starter_authentication_authorization",
   "version": "0.0.1",
-  "description": "A NestJs starter template with full fledged authentication and authorization features and many more.",
+  "description": "Consultancy CRM",
   "author": "Prakash Banjade",
   "contributors": [
     "Prakash Banjade (https://github.com/prakash-banjade)"
@@ -15,7 +15,7 @@
     "querybuilder",
     "morgan & winston"
   ],
-  "homepage": "https://github.com/Prakash-Banjade/nest_starter_authentication_authorization.git",
+  "homepage": "https://github.com/Prakash-Banjade/consultancy.git",
   "private": false,
   "license": "MIT",
   "scripts": {

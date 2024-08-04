@@ -1,6 +1,7 @@
 import { BaseEntity } from "src/core/entities/base.entity";
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { PersonalInfo } from "../personal-infos/entities/personal-info.entity";
+import { AcademicQualification } from "../academic-qualifications/entities/academic-qualification.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -29,11 +30,14 @@ export class Student extends BaseEntity {
     dob: string;
 
     // PERSONAL INFO
-    @OneToOne(() => PersonalInfo, { nullable: true })
+    @OneToOne(() => PersonalInfo, (personalInfo) => personalInfo.student, { nullable: true })
     @JoinColumn()
     personalInfo: PersonalInfo;
 
     // ACADEMIC QUALIFICATION
+    @OneToOne(() => AcademicQualification, (academicQualification) => academicQualification.student, { nullable: true })
+    @JoinColumn()
+    academicQualification: AcademicQualification;
 
     // WORK EXPERIENCE
 

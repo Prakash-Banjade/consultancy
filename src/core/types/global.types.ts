@@ -48,3 +48,17 @@ export enum EMaritalStatus {
     SEPARATED = 'separated',
     OTHER = 'other',
 }
+
+export enum ELevelOfEducation {
+    POSTGRADUATE = 'postgraduate',
+    UNDERGRADUATE = 'undergraduate',
+    GRADETWELVE = 'grade12',
+    GRADETEN = 'grade10',
+}
+
+export enum EGradingSystem {
+    CGPA = 'cgpa',
+    PERCENTAGE = 'percentage',
+    MARKS = 'marks',
+    SCALE = 'scale',
+}

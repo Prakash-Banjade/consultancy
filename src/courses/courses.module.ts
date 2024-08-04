@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { UniversitiesModule } from 'src/universities/universities.module';
 import { CategoriesModule } from 'src/categories/categories.module';
+import { Intake } from './entities/intakes.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Course,
+      Intake,
     ]),
     CategoriesModule,
     UniversitiesModule,

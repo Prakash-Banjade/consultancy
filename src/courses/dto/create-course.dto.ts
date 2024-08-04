@@ -1,5 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString, IsUrl, IsUUID } from "class-validator";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
+import { ArrayMinSize, IsArray, IsDefined, IsNotEmpty, IsNumber, IsString, IsUrl, IsUUID, ValidateNested } from "class-validator";
+import { CreateIntakeDto } from "./intake.dto";
+import { Type } from "class-transformer";
+
+class IntakeDto extends OmitType(CreateIntakeDto, ['courseId']) { }
 
 export class CreateCourseDto {
     @ApiProperty()
@@ -77,4 +81,12 @@ export class CreateCourseDto {
     @IsNotEmpty()
     @IsString()
     duration: string;
+
+    @ApiProperty({ type: [IntakeDto], isArray: true })
+    @ValidateNested({ each: true })
+    @IsArray()
+    @ArrayMinSize(1)
+    @Type(() => IntakeDto)
+    @IsDefined()
+    intakes: IntakeDto[];
 }

@@ -1,7 +1,8 @@
 import { Category } from "src/categories/entities/category.entity";
 import { BaseEntity } from "src/core/entities/base.entity";
 import { University } from "src/universities/entities/university.entity";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Intake } from "./intakes.entity";
 
 @Entity()
 export class Course extends BaseEntity {
@@ -50,4 +51,7 @@ export class Course extends BaseEntity {
 
     @Column({ type: 'varchar' })
     duration: string;
+
+    @OneToMany(() => Intake, intake => intake.course)
+    intakes: Intake[];
 }

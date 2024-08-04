@@ -1,0 +1,90 @@
+  @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    cvId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    recommendationLetterId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    experienceDocId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    passportDocId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    ieltsPteMarkDocId: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    certificate_grade_10_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    transcript_grade_10_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    certificate_plus_two_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    transcript_plus_two_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    certificate_bachelor_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsUUID()
+    transcript_bachelor_id: string;
+
+
+
+
+
+
+
+
+    
+
+        // evaluate documents
+    const [
+      cv,
+      recommendationLetter,
+      experienceDoc,
+      passportDoc,
+      ieltsPteMarkDoc,
+      certificate_grade_10,
+      transcript_grade_10,
+      certificate_plus_two,
+      transcript_plus_two,
+      certificate_bachelor,
+      transcript_bachelor
+    ] = await this.filesService.findAllByIds([
+      createStudentDto.cvId,
+      createStudentDto.recommendationLetterId,
+      createStudentDto.experienceDocId,
+      createStudentDto.passportDocId,
+      createStudentDto.ieltsPteMarkDocId,
+      createStudentDto.certificate_grade_10_id,
+      createStudentDto.transcript_grade_10_id,
+      createStudentDto.certificate_plus_two_id,
+      createStudentDto.transcript_plus_two_id,
+      createStudentDto.certificate_bachelor_id,
+      createStudentDto.transcript_bachelor_id
+    ])

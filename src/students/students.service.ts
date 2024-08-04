@@ -4,7 +4,6 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
 import { Brackets, Not, Repository } from 'typeorm';
-import { FilesService } from 'src/files/files.service';
 import { StudentQueryDto } from './dto/student-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
 
@@ -12,55 +11,12 @@ import paginatedData from 'src/core/utils/paginatedData';
 export class StudentsService {
   constructor(
     @InjectRepository(Student) private studentRepo: Repository<Student>,
-    private readonly filesService: FilesService,
   ) { }
 
   async create(createStudentDto: CreateStudentDto) {
-
     await this.checkIfStudentExists(createStudentDto);
 
-    // evaluate documents
-    const [
-      cv,
-      recommendationLetter,
-      experienceDoc,
-      passportDoc,
-      ieltsPteMarkDoc,
-      certificate_grade_10,
-      transcript_grade_10,
-      certificate_plus_two,
-      transcript_plus_two,
-      certificate_bachelor,
-      transcript_bachelor
-    ] = await this.filesService.findAllByIds([
-      createStudentDto.cvId,
-      createStudentDto.recommendationLetterId,
-      createStudentDto.experienceDocId,
-      createStudentDto.passportDocId,
-      createStudentDto.ieltsPteMarkDocId,
-      createStudentDto.certificate_grade_10_id,
-      createStudentDto.transcript_grade_10_id,
-      createStudentDto.certificate_plus_two_id,
-      createStudentDto.transcript_plus_two_id,
-      createStudentDto.certificate_bachelor_id,
-      createStudentDto.transcript_bachelor_id
-    ])
-
-
-    const newStudent = this.studentRepo.create({
-      ...createStudentDto,
-      cv,
-      recommendationLetter,
-      experienceDoc,
-      passportDoc,
-      ieltsPteMarkDoc,
-      certificate_grade_10,
-      transcript_grade_10,
-      certificate_plus_two,
-      transcript_plus_two,
-      certificate_bachelor,
-      transcript_bachelor
-    })
+    const newStudent = this.studentRepo.create(createStudentDto)
 
     return this.studentMutationReturn(newStudent, 'create');
   }
@@ -94,45 +50,8 @@ export class StudentsService {
 
     await this.checkIfStudentExists(updateStudentDto, existing);
 
-    const [
-      cv,
-      recommendationLetter,
-      experienceDoc,
-      passportDoc,
-      ieltsPteMarkDoc,
-      certificate_grade_10,
-      transcript_grade_10,
-      certificate_plus_two,
-      transcript_plus_two,
-      certificate_bachelor,
-      transcript_bachelor
-    ] = await this.filesService.findAllByIds([
-      updateStudentDto.cvId,
-      updateStudentDto.recommendationLetterId,
-      updateStudentDto.experienceDocId,
-      updateStudentDto.passportDocId,
-      updateStudentDto.ieltsPteMarkDocId,
-      updateStudentDto.certificate_grade_10_id,
-      updateStudentDto.transcript_grade_10_id,
-      updateStudentDto.certificate_plus_two_id,
-      updateStudentDto.transcript_plus_two_id,
-      updateStudentDto.certificate_bachelor_id,
-      updateStudentDto.transcript_bachelor_id
-    ])
-
     Object.assign(existing, {
       ...updateStudentDto,
-      cv,
-      recommendationLetter,
-      experienceDoc,
-      passportDoc,
-      ieltsPteMarkDoc,
-      certificate_grade_10,
-      transcript_grade_10,
-      certificate_plus_two,
-      transcript_plus_two,
-      certificate_bachelor,
-      transcript_bachelor
     });
 
 
@@ -146,13 +65,12 @@ export class StudentsService {
   }
 
   private async checkIfStudentExists(studentDto: CreateStudentDto | UpdateStudentDto, student?: Student) {
-    const { passportNumber, email, phoneNumber } = studentDto;
+    const { email, phoneNumber } = studentDto;
 
     const existingStudent = await this.studentRepo.createQueryBuilder('student')
       .where(new Brackets(qb => {
         qb.where([
           { email },
-          { passportNumber },
           { phoneNumber }
         ])
         student?.id && qb.andWhere({ id: Not(student.id) })
@@ -161,11 +79,9 @@ export class StudentsService {
     if (existingStudent && !student) {
       if (existingStudent.email === email) throw new BadRequestException('Student with this email already exists');
       if (existingStudent.phoneNumber === phoneNumber) throw new BadRequestException('Student with this phoneNumber already exists');
-      if (existingStudent.passportNumber === passportNumber) throw new BadRequestException('Student with this passportNumber already exists');
     } else if (existingStudent && student) {
       if (existingStudent.email === email && existingStudent.id !== student.id) throw new BadRequestException('Student with this email already exists');
       if (existingStudent.phoneNumber === phoneNumber && existingStudent.id !== student.id) throw new BadRequestException('Student with this phoneNumber already exists');
-      if (existingStudent.passportNumber === passportNumber && existingStudent.id !== student.id) throw new BadRequestException('Student with this passportNumber already exists');
     }
   }
 

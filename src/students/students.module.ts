@@ -4,6 +4,7 @@ import { StudentsController } from './students.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from './entities/student.entity';
 import { FilesModule } from 'src/files/files.module';
+import { PersonalInfosModule } from './personal-infos/personal-infos.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { FilesModule } from 'src/files/files.module';
       Student
     ]),
     FilesModule,
+    PersonalInfosModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

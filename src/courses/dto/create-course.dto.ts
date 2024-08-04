@@ -82,11 +82,11 @@ export class CreateCourseDto {
     @IsString()
     duration: string;
 
-    @ApiProperty({ type: [IntakeDto], isArray: true })
-    @ValidateNested({ each: true })
-    @IsArray()
-    @ArrayMinSize(1)
-    @Type(() => IntakeDto)
-    @IsDefined()
-    intakes: IntakeDto[];
+    // @ApiProperty({ type: [IntakeDto], isArray: true })
+    // @ValidateNested({ each: true })
+    // @IsArray()
+    // @ArrayMinSize(1)
+    // @Type(() => IntakeDto)
+    // @IsDefined()
+    // intakes: IntakeDto[];
 }

@@ -40,6 +40,7 @@ export class BritishCounsilService {
       .orderBy('britishCounsil.createdAt', queryDto.order)
       .take(queryDto.take)
       .skip(queryDto.skip)
+      .leftJoinAndSelect("britishCounsil.passportAttatchment", "passportAttatchment")
       .where(new Brackets(qb => {
         queryDto.search && qb.where('LOWER(britishCounsil.name) ILIKE LOWER(:search)', { search: `%${queryDto.search}%` })
       }))
@@ -49,7 +50,8 @@ export class BritishCounsilService {
 
   async findOne(id: string) {
     const existing = await this.britishCounsilRepo.findOne({
-      where: { id }
+      where: { id },
+      relations: ['passportAttatchment'],
     });
     if (!existing) throw new NotFoundException('British Counsil not found');
 
@@ -58,6 +60,11 @@ export class BritishCounsilService {
 
   async update(id: string, updateBritishCounsilDto: UpdateBritishCounsilDto) {
     const existing = await this.findOne(id);
+
+    if (updateBritishCounsilDto.passportAttatchmentId && updateBritishCounsilDto.passportAttatchmentId !== existing.passportAttatchment.id) {
+      const passportAttatchment = await this.fileService.findOne(updateBritishCounsilDto.passportAttatchmentId);
+      existing.passportAttatchment = passportAttatchment;
+    }
 
     const updated = this.britishCounsilRepo.merge(existing, updateBritishCounsilDto);
     const saved = await this.britishCounsilRepo.save(updated);

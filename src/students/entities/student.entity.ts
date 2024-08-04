@@ -14,7 +14,7 @@ export class Student extends BaseEntity {
     @Column({ type: 'varchar' })
     firstName: string;
 
-    @Column({ type: 'varchar' })
+    @Column({ type: 'varchar', nullable: true })
     middleName: string;
 
     @Column({ type: 'varchar' })

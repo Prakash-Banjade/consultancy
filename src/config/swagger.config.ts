@@ -6,6 +6,9 @@ import { CategoriesModule } from "src/categories/categories.module";
 import { CountriesModule } from "src/countries/countries.module";
 import { CoursesModule } from "src/courses/courses.module";
 import { FilesModule } from "src/files/files.module";
+import { AcademicQualificationsModule } from "src/students/academic-qualifications/academic-qualifications.module";
+import { PersonalInfosModule } from "src/students/personal-infos/personal-infos.module";
+import { StudentsModule } from "src/students/students.module";
 import { UniversitiesModule } from "src/universities/universities.module";
 import { UsersModule } from "src/users/users.module";
 
@@ -31,11 +34,14 @@ export function setupSwagger(app: INestApplication): void {
             AuthModule,
             UsersModule,
             FilesModule,
-            BritishCounsilModule,
             CategoriesModule,
-            CoursesModule,
+            BritishCounsilModule,
             CountriesModule,
             UniversitiesModule,
+            CoursesModule,
+            StudentsModule,
+            PersonalInfosModule,
+            AcademicQualificationsModule,
         ],
     });
 

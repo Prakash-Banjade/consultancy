@@ -48,16 +48,18 @@ export class CreatePersonalInfoDto {
     |--------------------------------------------------
     */
 
-    @ApiProperty()
+    @ApiProperty({ type: CreateAddressDto })
     @IsNotEmpty()
     @ValidateNested()
+    @Type(() => CreateAddressDto)
     @IsDefined()
     mailingAddress: CreateAddressDto
 
-    @ApiProperty()
+    @ApiProperty({ type: CreateAddressDto })
     @IsNotEmpty()
     @IsDefined()
     @ValidateNested()
+    @Type(() => CreateAddressDto)
     permanentAddress: CreateAddressDto
 
     /**

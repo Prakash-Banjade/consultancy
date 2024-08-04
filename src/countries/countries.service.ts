@@ -3,7 +3,7 @@ import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Country } from './entities/country.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
 import { QueryDto } from 'src/core/dto/query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
@@ -47,9 +47,9 @@ export class CountriesService {
       .skip(queryDto.skip)
       .take(queryDto.take)
       .leftJoinAndSelect('country.image', 'image')
-      .where('LOWER(country.name) LIKE LOWER(:name)', {
-        name: `%${queryDto.search}%`
-      })
+      .where(new Brackets(qb => {
+        queryDto.search && qb.where('LOWER(country.name) ILIKE LOWER(:search)', { search: `%${queryDto.search}%` })
+      }))
 
     return paginatedData(queryDto, querybuilder)
   }
@@ -68,11 +68,13 @@ export class CountriesService {
   async update(id: string, updateCountryDto: UpdateCountryDto) {
     const existing = await this.findOne(id);
 
-    const image = updateCountryDto?.imageId
+    const image = (updateCountryDto?.imageId && updateCountryDto?.imageId !== existing?.image?.id)
       ? await this.filesService.findOne(updateCountryDto.imageId)
       : existing.image;
 
     if (image.format === 'pdf') throw new BadRequestException('Pdf files are not allowed. Image must be of type image/png or image/jpg');
+
+    existing.image = image;
 
     const updated = this.countryRepo.merge(existing, updateCountryDto);
 

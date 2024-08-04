@@ -20,12 +20,20 @@ export class LevelOfStudiesService {
         id: createLevelOfStudyDto.studentId,
         academicQualification: { id: createLevelOfStudyDto.academicQualificationId }
       },
-      relations: ['academicQualification'],
+      relations: {
+        academicQualification: {
+          levelOfStudies: true
+        }
+      },
     });
     if (!student) throw new BadRequestException('Student does not exist');
 
     // check if academicQualification exists
     if (student.academicQualification.id !== createLevelOfStudyDto.academicQualificationId) throw new BadRequestException('Academic qualification does not exist');
+
+    // check if level of study already exists
+    const existingLevelOfStudy = student.academicQualification.levelOfStudies.find(levelOfStudy => levelOfStudy.levelOfStudy === createLevelOfStudyDto.levelOfStudy);
+    if (existingLevelOfStudy) throw new BadRequestException('Level of study already exists');
 
     const newLevelOfStudy = this.levelOfStudyRepo.create({
       ...createLevelOfStudyDto,

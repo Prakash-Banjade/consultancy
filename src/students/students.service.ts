@@ -18,7 +18,9 @@ export class StudentsService {
 
     const newStudent = this.studentRepo.create(createStudentDto)
 
-    return this.studentMutationReturn(newStudent, 'create');
+    const savedStudent = await this.studentRepo.save(newStudent);
+
+    return this.studentMutationReturn(savedStudent, 'create');
   }
 
   async findAll(queryDto: StudentQueryDto) {
@@ -30,7 +32,6 @@ export class StudentsService {
       .skip(queryDto.skip)
       .where(new Brackets(qb => {
         queryDto.search && qb.andWhere("LOWER(CONCAT(student.firstName, ' ', student.lastName)) LIKE LOWER(:search)", { search: `%${queryDto.search}%` })
-        // queryDto.countryIds?.length && qb.andWhere('student.countryId IN (:...countryIds)', { countryIds: queryDto.countryIds })
         queryDto.createdFrom && qb.andWhere('student.createdAt >= :createdFrom', { createdFrom: queryDto.createdFrom })
         queryDto.createdTo && qb.andWhere('student.createdAt <= :createdTo', { createdTo: queryDto.createdTo })
       }))
@@ -39,7 +40,15 @@ export class StudentsService {
   }
 
   async findOne(id: string) {
-    const existingStudent = await this.studentRepo.findOne({ where: { id } });
+    const existingStudent = await this.studentRepo.findOne({
+      where: { id },
+      relations: {
+        personalInfo: true,
+        academicQualification: {
+          levelOfStudies: true
+        }
+      }
+    });
     if (!existingStudent) throw new BadRequestException('Student not found');
 
     return existingStudent;

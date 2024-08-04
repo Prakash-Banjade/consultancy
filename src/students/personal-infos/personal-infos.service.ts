@@ -4,22 +4,32 @@ import { UpdatePersonalInfoDto } from './dto/update-personal-info.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PersonalInfo } from './entities/personal-info.entity';
 import { Not, Repository } from 'typeorm';
+import { Student } from '../entities/student.entity';
 
 @Injectable()
 export class PersonalInfosService {
   constructor(
     @InjectRepository(PersonalInfo) private personalInfoRepo: Repository<PersonalInfo>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) { }
 
   async create(createPersonalInfoDto: CreatePersonalInfoDto) {
-    const existingPersonalInfo = await this.personalInfoRepo.findOne({ where: { passportNumber: createPersonalInfoDto.passportNumber } });
-    if (existingPersonalInfo) throw new ConflictException('PersonalInfo with this passportNumber already exists');
+    const student = await this.studentRepo.findOneBy({ id: createPersonalInfoDto.studentId });
+
+    const existingPersonalInfo = await this.personalInfoRepo.findOne({
+      where: [
+        { passportNumber: createPersonalInfoDto.passportNumber },
+        { student: { id: student.id } }
+      ]
+    });
+    if (existingPersonalInfo) throw new ConflictException('Duplicate passport number or the student has already a personal info');
 
     const visaRefusalCountries = JSON.stringify(createPersonalInfoDto.visaRefusalCountries);
 
     const personalInfo = this.personalInfoRepo.create({
       ...createPersonalInfoDto,
-      visaRefusalCountries
+      visaRefusalCountries,
+      student,
     });
 
     const savedPersonalInfo = await this.personalInfoRepo.save(personalInfo);

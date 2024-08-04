@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsDateString, IsDefined, IsEmail, IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsDateString, IsDefined, IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID, ValidateNested } from "class-validator";
 import { CreateAddressDto } from "src/addresses/dto/create-address.dto";
 import { ECountry } from "src/core/types/countries.type";
 import { EGender, EMaritalStatus } from "src/core/types/global.types";
@@ -17,6 +17,10 @@ class VisaRefusalCountriesDto {
 }
 
 export class CreatePersonalInfoDto {
+    @ApiProperty({ format: 'uuid' })
+    @IsUUID()
+    studentId: string;
+
     /**
    |--------------------------------------------------
    | PERSONAL INFO

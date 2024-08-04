@@ -2,10 +2,14 @@ import { Address } from "src/addresses/entities/address.entity";
 import { BaseEntity } from "src/core/entities/base.entity";
 import { ECountry } from "src/core/types/countries.type";
 import { EGender, EMaritalStatus } from "src/core/types/global.types";
+import { Student } from "src/students/entities/student.entity";
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 
 @Entity()
 export class PersonalInfo extends BaseEntity {
+    @OneToOne(() => Student, (student) => student.personalInfo)
+    student: Student
+
     /**
     |--------------------------------------------------
     | PERSONAL INFO

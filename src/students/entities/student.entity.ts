@@ -1,8 +1,9 @@
 import { BaseEntity } from "src/core/entities/base.entity";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { PersonalInfo } from "../personal-infos/entities/personal-info.entity";
 import { AcademicQualification } from "../academic-qualifications/entities/academic-qualification.entity";
 import { WorkExperience } from "../work-experiences/entities/work-experience.entity";
+import { Application } from "src/applications/entities/application.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -39,11 +40,15 @@ export class Student extends BaseEntity {
     @OneToOne(() => AcademicQualification, (academicQualification) => academicQualification.student, { nullable: true })
     @JoinColumn()
     academicQualification: AcademicQualification;
-    
+
     // WORK EXPERIENCE
     @OneToOne(() => WorkExperience, (workExperience) => workExperience.student, { nullable: true })
     @JoinColumn()
     workExperience: WorkExperience;
 
     // TESTS
+
+
+    @OneToMany(() => Application, application => application.student)
+    applications: Application[]
 }

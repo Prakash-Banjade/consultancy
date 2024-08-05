@@ -29,6 +29,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { CoursesModule } from './courses/courses.module';
 import { UniversitiesModule } from './universities/universities.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { AddressesModule } from './addresses/addresses.module';
     CoursesModule,
     UniversitiesModule,
     AddressesModule,
+    ApplicationsModule,
   ],
   controllers: [AppController],
   providers: [

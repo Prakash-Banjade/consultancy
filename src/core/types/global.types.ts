@@ -68,3 +68,16 @@ export enum EModeOfSalary {
     BANK = 'bank',
     CHEQUE = 'cheque',
 }
+
+export enum EApplicationPriority {
+    LOW = 'low',
+    MEDIUM = 'medium',
+    HIGH = 'high',
+    NONE = 'none',
+}
+
+export enum EApplicationStatus {
+    PENDING = 'pending',
+    APPROVED = 'approved',
+    REJECTED = 'rejected',
+}

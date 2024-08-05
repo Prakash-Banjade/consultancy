@@ -1,9 +1,10 @@
-import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsNotEmpty, IsUUID } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsUUID } from "class-validator";
+import { IsFutureMonth } from "src/core/decorators/isFutureMonth.decorator";
 import { IsFutureYear } from "src/core/decorators/validateYear.decorator";
 import { EMonth } from "src/core/types/months.types";
 
-export class CreateIntakeDto {
+export class CreateApplicationDto {
     @ApiProperty({ type: 'int' })
     @IsNotEmpty()
     @IsFutureYear()
@@ -11,12 +12,16 @@ export class CreateIntakeDto {
 
     @ApiProperty({ enum: EMonth })
     @IsEnum(EMonth)
+    @IsFutureMonth()
     month: EMonth;
 
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     @IsNotEmpty()
     courseId: string;
-}
 
-export class UpdateIntakeDto extends PartialType(OmitType(CreateIntakeDto, ['courseId'])) { }
+    @ApiProperty({ format: 'uuid' })
+    @IsUUID()
+    @IsNotEmpty()
+    studentId: string;
+}

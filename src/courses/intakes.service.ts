@@ -17,7 +17,7 @@ export class IntakesService {
     async create(createIntakeDto: CreateIntakeDto) {
         const course = await this.coursesService.findOne(createIntakeDto.courseId)
 
-        const existing = await this.intakeRepo.findOneBy({ year: createIntakeDto.year, from: createIntakeDto.from, to: createIntakeDto.to, course: { id: course.id } });
+        const existing = await this.intakeRepo.findOneBy({ year: createIntakeDto.year, month: createIntakeDto.month, course: { id: course.id } });
 
         if (existing) throw new ConflictException('Intake already exists')
 
@@ -73,8 +73,7 @@ export class IntakesService {
             message: `${type === 'create' ? 'Created' : type === 'update' ? 'Updated' : 'Removed'} intake successfully`,
             intake: {
                 id: intake.id,
-                from: intake.from,
-                to: intake.to,
+                month: intake.month,
                 year: intake.year
             }
         }

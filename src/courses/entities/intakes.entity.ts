@@ -1,7 +1,8 @@
 import { BaseEntity } from "src/core/entities/base.entity";
 import { EMonth } from "src/core/types/months.types";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { Course } from "./course.entity";
+import { Application } from "src/applications/entities/application.entity";
 
 @Entity()
 export class Intake extends BaseEntity {
@@ -9,11 +10,11 @@ export class Intake extends BaseEntity {
     year: number
 
     @Column({ type: 'enum', enum: EMonth })
-    from: EMonth;
-
-    @Column({ type: 'enum', enum: EMonth })
-    to: EMonth;
+    month: EMonth;
 
     @ManyToOne(() => Course, course => course.intakes)
     course: Course;
+
+    // @OneToMany(() => Application, application => application.intake)
+    // applications: Application[];
 }

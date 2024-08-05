@@ -3,6 +3,7 @@ import { BaseEntity } from "src/core/entities/base.entity";
 import { University } from "src/universities/entities/university.entity";
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { Intake } from "./intakes.entity";
+import { Application } from "src/applications/entities/application.entity";
 
 @Entity()
 export class Course extends BaseEntity {
@@ -54,4 +55,7 @@ export class Course extends BaseEntity {
 
     @OneToMany(() => Intake, intake => intake.course)
     intakes: Intake[];
+
+    @OneToMany(() => Application, application => application.course)
+    applications: Application[]
 }

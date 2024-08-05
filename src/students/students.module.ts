@@ -7,6 +7,7 @@ import { FilesModule } from 'src/files/files.module';
 import { PersonalInfosModule } from './personal-infos/personal-infos.module';
 import { AcademicQualificationsModule } from './academic-qualifications/academic-qualifications.module';
 import { WorkExperiencesModule } from './work-experiences/work-experiences.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { WorkExperiencesModule } from './work-experiences/work-experiences.modul
     PersonalInfosModule,
     AcademicQualificationsModule,
     WorkExperiencesModule,
+    DocumentsModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

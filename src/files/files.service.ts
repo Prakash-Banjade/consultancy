@@ -79,7 +79,7 @@ export class FilesService {
         }
       },
     });
-    if (!existingFile) throw new NotFoundException('File not found');
+    if (!existingFile) throw new NotFoundException('File with id ' + id + ' not found');
 
     return existingFile
   }

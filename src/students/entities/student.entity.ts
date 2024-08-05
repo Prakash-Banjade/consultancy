@@ -4,6 +4,7 @@ import { PersonalInfo } from "../personal-infos/entities/personal-info.entity";
 import { AcademicQualification } from "../academic-qualifications/entities/academic-qualification.entity";
 import { WorkExperience } from "../work-experiences/entities/work-experience.entity";
 import { Application } from "src/applications/entities/application.entity";
+import { Document } from "../documents/entities/document.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -48,6 +49,11 @@ export class Student extends BaseEntity {
 
     // TESTS
 
+
+    // DOCUMENTS
+    @OneToOne(() => Document, document => document.student, { nullable: true })
+    @JoinColumn()
+    document: Document;
 
     @OneToMany(() => Application, application => application.student)
     applications: Application[]

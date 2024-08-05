@@ -6,6 +6,7 @@ import { Student } from './entities/student.entity';
 import { Brackets, Not, Repository } from 'typeorm';
 import { StudentQueryDto } from './dto/student-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
+import { studentSelectCols } from './entities/student-select-cols.config';
 
 @Injectable()
 export class StudentsService {
@@ -48,7 +49,20 @@ export class StudentsService {
           levelOfStudies: true
         },
         workExperience: true,
-      }
+        document: {
+          bankBalanceCertificate: true,
+          financialAffidavit: true,
+          consent_form: true,
+          ielts: true,
+          grade_eleven_marksheet: true,
+          english_learning_certificate: true,
+          grade_nine_marksheet: true,
+          grade_ten_marksheet: true,
+          grade_twelve_marksheet: true,
+          passport: true,
+        }
+      },
+      select: studentSelectCols
     });
     if (!existingStudent) throw new BadRequestException('Student not found');
 

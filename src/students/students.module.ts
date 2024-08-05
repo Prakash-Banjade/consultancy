@@ -6,6 +6,7 @@ import { Student } from './entities/student.entity';
 import { FilesModule } from 'src/files/files.module';
 import { PersonalInfosModule } from './personal-infos/personal-infos.module';
 import { AcademicQualificationsModule } from './academic-qualifications/academic-qualifications.module';
+import { WorkExperiencesModule } from './work-experiences/work-experiences.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AcademicQualificationsModule } from './academic-qualifications/academic
     FilesModule,
     PersonalInfosModule,
     AcademicQualificationsModule,
+    WorkExperiencesModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

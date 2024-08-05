@@ -62,3 +62,9 @@ export enum EGradingSystem {
     MARKS = 'marks',
     SCALE = 'scale',
 }
+
+export enum EModeOfSalary {
+    CASH = 'cash',
+    BANK = 'bank',
+    CHEQUE = 'cheque',
+}

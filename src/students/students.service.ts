@@ -46,7 +46,8 @@ export class StudentsService {
         personalInfo: true,
         academicQualification: {
           levelOfStudies: true
-        }
+        },
+        workExperience: true,
       }
     });
     if (!existingStudent) throw new BadRequestException('Student not found');

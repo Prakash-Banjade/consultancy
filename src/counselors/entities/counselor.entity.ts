@@ -1,12 +1,17 @@
-import { BadRequestException } from "@nestjs/common";
-import { BeforeInsert, Column, Entity } from "typeorm";
-import * as bcrypt from 'bcrypt';
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { BaseEntity } from "src/core/entities/base.entity";
+import { User } from "src/users/entities/user.entity";
 
 @Entity()
 export class Counselor extends BaseEntity {
-    @Column('varchar')
-    name: string;
+    @Column({ type: 'varchar' })
+    firstName: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    middleName: string;
+
+    @Column({ type: 'varchar' })
+    lastName: string;
 
     @Column('varchar')
     email: string;
@@ -14,13 +19,10 @@ export class Counselor extends BaseEntity {
     @Column('varchar')
     phoneNumber: string;
 
-    @Column('varchar')
-    password: string;
+    @OneToOne(() => User, (user) => user.counselor)
+    @JoinColumn()
+    user: User;
 
-    @BeforeInsert()
-    hashPassword() {
-        if (!this.password) throw new BadRequestException('Password is required');
-
-        this.password = bcrypt.hashSync(this.password, 10);
-    }
+    @Column('boolean', { default: false })
+    eligibleForComission: boolean = false;
 }

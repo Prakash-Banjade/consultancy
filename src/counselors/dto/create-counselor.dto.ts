@@ -1,11 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateCounselorDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    name: string;
+    firstName: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsString()
+    middleName?: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -21,4 +31,8 @@ export class CreateCounselorDto {
     @IsNotEmpty()
     @IsString()
     password: string;
+
+    @ApiProperty({ type: Boolean, default: false })
+    @IsBoolean()
+    eligibleForComission: boolean = false;
 }

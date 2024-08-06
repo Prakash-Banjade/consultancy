@@ -1,18 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Account } from './entities/account.entity';
+import { Counselor } from 'src/counselors/entities/counselor.entity';
+import { Student } from 'src/students/entities/student.entity';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { BaseRepository } from 'src/core/repository/base.repository';
+import { Roles } from 'src/core/types/global.types';
+import { User } from 'src/users/entities/user.entity';
 
-@Injectable()
-export class AccountsService {
+@Injectable({ scope: Scope.REQUEST })
+export class AccountsService extends BaseRepository {
   constructor(
+    dataSource: DataSource, @Inject(REQUEST) req: Request,
     @InjectRepository(Account) private accountsRepo: Repository<Account>,
-  ) { }
+  ) {
+    super(dataSource, req);
+  }
 
-  create(createAccountDto: CreateAccountDto) {
-    return 'This action adds a new account';
+  async createAccount(entity: Counselor | Student, { givenPassword }: { givenPassword?: string }) {
+    // const password = generateRandomPassword();
+    const key = entity instanceof Counselor ? Roles.COUNSELLER : Roles.STUDENT;
+
+    const account = this.getRepository<Account>(Account).create({
+      email: entity.email,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      role: key,
+      isVerified: true,
+      password: givenPassword,
+    })
+
+    console.log({
+      entityType: entity.constructor.name,
+      password: givenPassword,
+      email: entity.email
+    })
+
+    // TODO: send email to user
+
+    const savedAccount = await this.getRepository(Account).save(account);
+
+    const user = this.getRepository(User).create({
+      account: savedAccount,
+      [key]: entity,
+    })
+
+    await this.getRepository(User).save(user);
   }
 
   findAll() {

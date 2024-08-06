@@ -30,6 +30,7 @@ import { CoursesModule } from './courses/courses.module';
 import { UniversitiesModule } from './universities/universities.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { CounselorsModule } from './counselors/counselors.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { ApplicationsModule } from './applications/applications.module';
     UniversitiesModule,
     AddressesModule,
     ApplicationsModule,
+    CounselorsModule,
   ],
   controllers: [AppController],
   providers: [

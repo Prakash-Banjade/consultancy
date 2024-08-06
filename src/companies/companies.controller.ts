@@ -14,7 +14,7 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) { }
 
   @Post()
-  @ChekcAbilities({ subject: 'all', action: Action.CREATE })
+  @ChekcAbilities({ subject: 'admin', action: Action.CREATE })
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }

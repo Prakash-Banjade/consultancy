@@ -17,7 +17,11 @@ export class CaslAbilityFactory {
             can(Action.MANAGE, 'admin')
         }
         else if (user.role === Roles.ADMIN) {
-            can(Action.MANAGE, 'admin')
+            console.log('hi')
+            can(Action.CREATE, 'admin')
+            cannot(Action.CREATE, 'all').because('Only super admins are allowed to manage all records.')
+            can(Action.READ, 'admin')
+            cannot(Action.READ, 'all').because('Only super admins are allowed to manage all records.')
         }
         else if (user.role === Roles.COUNSELLER) {
             can(Action.CREATE, 'all')

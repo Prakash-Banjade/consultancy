@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateCounselorDto } from './dto/create-counselor.dto';
 import { UpdateCounselorDto } from './dto/update-counselor.dto';
 import { Counselor } from './entities/counselor.entity';
@@ -9,26 +9,34 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/core/repository/base.repository';
 import paginatedData from 'src/core/utils/paginatedData';
 import { AccountsService } from 'src/accounts/accounts.service';
+import { CompaniesService } from 'src/companies/companies.service';
+import { AuthUser, Roles } from 'src/core/types/global.types';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CounselorsService extends BaseRepository {
   constructor(
     dataSource: DataSource, @Inject(REQUEST) req: Request,
     private readonly accountsService: AccountsService,
+    private readonly companiesService: CompaniesService,
   ) {
     super(dataSource, req);
   }
 
-  async create(createCounselorDto: CreateCounselorDto) {
+  async create(createCounselorDto: CreateCounselorDto, currentUser: AuthUser) {
     const existingCounselor = await this.getRepository(Counselor).findOne({ where: { email: createCounselorDto.email } });
     if (existingCounselor) throw new ConflictException('Counselor with this email already exists');
+
+    // evaluate company for super admin and admin
+    if (currentUser.role === Roles.SUPER_ADMIN && !createCounselorDto.companyId) throw new BadRequestException('Company id is required');
+
+    const company = await this.companiesService.findOne(currentUser.companyId || createCounselorDto.companyId);
 
     const newCounselor = this.getRepository(Counselor).create(createCounselorDto);
 
     const savedCounselor = await this.getRepository(Counselor).save(newCounselor);
 
     // create account
-    await this.accountsService.createAccount(savedCounselor, { givenPassword: createCounselorDto.password });
+    await this.accountsService.createAccount(savedCounselor, { givenPassword: createCounselorDto.password, company: company });
 
     return newCounselor;
   }

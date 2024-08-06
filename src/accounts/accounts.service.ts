@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { BaseRepository } from 'src/core/repository/base.repository';
 import { Roles } from 'src/core/types/global.types';
 import { User } from 'src/users/entities/user.entity';
+import { Company } from 'src/companies/entities/company.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AccountsService extends BaseRepository {
@@ -20,7 +21,7 @@ export class AccountsService extends BaseRepository {
     super(dataSource, req);
   }
 
-  async createAccount(entity: Counselor | Student, { givenPassword }: { givenPassword?: string }) {
+  async createAccount(entity: Counselor | Student, { givenPassword, company }: { givenPassword?: string, company: Company }) {
     // const password = generateRandomPassword();
     const key = entity instanceof Counselor ? Roles.COUNSELLER : Roles.STUDENT;
 
@@ -31,6 +32,7 @@ export class AccountsService extends BaseRepository {
       role: key,
       isVerified: true,
       password: givenPassword,
+      company,
     })
 
     console.log({

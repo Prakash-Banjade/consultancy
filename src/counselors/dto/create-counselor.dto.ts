@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateCounselorDto {
     @ApiProperty()
@@ -35,4 +35,9 @@ export class CreateCounselorDto {
     @ApiProperty({ type: Boolean, default: false })
     @IsBoolean()
     eligibleForComission: boolean = false;
+
+    @ApiProperty({ format: 'uuid' })
+    @IsUUID()
+    @IsOptional()
+    companyId: string;
 }

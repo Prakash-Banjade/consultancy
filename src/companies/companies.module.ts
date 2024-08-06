@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CompaniesController } from './companies.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { FilesModule } from 'src/files/files.module';
 import { CompanyBankingDetailsService } from './companyBankingDetails.service';
 import { CompanyBankingDetailsController } from './companyBankingDetails.controller';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([

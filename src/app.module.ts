@@ -31,6 +31,7 @@ import { UniversitiesModule } from './universities/universities.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ApplicationsModule } from './applications/applications.module';
 import { CounselorsModule } from './counselors/counselors.module';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { CounselorsModule } from './counselors/counselors.module';
     AddressesModule,
     ApplicationsModule,
     CounselorsModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [

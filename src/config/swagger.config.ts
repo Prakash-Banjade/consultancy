@@ -1,5 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { ApplicationsModule } from "src/applications/applications.module";
 import { AuthModule } from "src/auth/auth.module";
 import { BritishCounsilModule } from "src/british-counsil/british-counsil.module";
 import { CategoriesModule } from "src/categories/categories.module";
@@ -9,6 +10,7 @@ import { FilesModule } from "src/files/files.module";
 import { AcademicQualificationsModule } from "src/students/academic-qualifications/academic-qualifications.module";
 import { PersonalInfosModule } from "src/students/personal-infos/personal-infos.module";
 import { StudentsModule } from "src/students/students.module";
+import { WorkExperiencesModule } from "src/students/work-experiences/work-experiences.module";
 import { UniversitiesModule } from "src/universities/universities.module";
 import { UsersModule } from "src/users/users.module";
 
@@ -42,6 +44,8 @@ export function setupSwagger(app: INestApplication): void {
             StudentsModule,
             PersonalInfosModule,
             AcademicQualificationsModule,
+            WorkExperiencesModule,
+            ApplicationsModule,
         ],
     });
 

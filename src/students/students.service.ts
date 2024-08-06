@@ -31,6 +31,7 @@ export class StudentsService {
       .orderBy('student.createdAt', queryDto.order)
       .take(queryDto.take)
       .skip(queryDto.skip)
+      .loadRelationCountAndMap('student.applicationsCount', 'student.applications')
       .where(new Brackets(qb => {
         queryDto.search && qb.andWhere("LOWER(CONCAT(student.firstName, ' ', student.lastName)) LIKE LOWER(:search)", { search: `%${queryDto.search}%` })
         queryDto.createdFrom && qb.andWhere('student.createdAt >= :createdFrom', { createdFrom: queryDto.createdFrom })

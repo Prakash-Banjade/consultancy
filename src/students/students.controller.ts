@@ -5,7 +5,8 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { StudentQueryDto } from './dto/student-query.dto';
 import { ChekcAbilities } from 'src/core/decorators/abilities.decorator';
-import { Action } from 'src/core/types/global.types';
+import { Action, AuthUser } from 'src/core/types/global.types';
+import { CurrentUser } from 'src/core/decorators/user.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Students')
@@ -15,8 +16,8 @@ export class StudentsController {
 
   @Post()
   @ChekcAbilities({ subject: 'all', action: Action.CREATE })
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.create(createStudentDto);
+  create(@Body() createStudentDto: CreateStudentDto, @CurrentUser() currentUser: AuthUser) {
+    return this.studentsService.create(createStudentDto, currentUser);
   }
 
   @Get()

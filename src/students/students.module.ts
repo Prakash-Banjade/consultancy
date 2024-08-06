@@ -8,12 +8,14 @@ import { PersonalInfosModule } from './personal-infos/personal-infos.module';
 import { AcademicQualificationsModule } from './academic-qualifications/academic-qualifications.module';
 import { WorkExperiencesModule } from './work-experiences/work-experiences.module';
 import { DocumentsModule } from './documents/documents.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Student
     ]),
+    UsersModule,
     FilesModule,
     PersonalInfosModule,
     AcademicQualificationsModule,

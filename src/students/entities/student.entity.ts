@@ -1,10 +1,11 @@
 import { BaseEntity } from "src/core/entities/base.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { PersonalInfo } from "../personal-infos/entities/personal-info.entity";
 import { AcademicQualification } from "../academic-qualifications/entities/academic-qualification.entity";
 import { WorkExperience } from "../work-experiences/entities/work-experience.entity";
 import { Application } from "src/applications/entities/application.entity";
 import { Document } from "../documents/entities/document.entity";
+import { User } from "src/users/entities/user.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -57,4 +58,7 @@ export class Student extends BaseEntity {
 
     @OneToMany(() => Application, application => application.student)
     applications: Application[]
+
+    @ManyToOne(() => User, user => user.createdStudents, { onDelete: 'SET NULL' })
+    createdBy: User
 }

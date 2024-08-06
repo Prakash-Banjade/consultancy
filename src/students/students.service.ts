@@ -7,17 +7,25 @@ import { Brackets, Not, Repository } from 'typeorm';
 import { StudentQueryDto } from './dto/student-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
 import { studentSelectCols } from './entities/student-select-cols.config';
+import { UsersService } from 'src/users/users.service';
+import { AuthUser } from 'src/core/types/global.types';
 
 @Injectable()
 export class StudentsService {
   constructor(
     @InjectRepository(Student) private studentRepo: Repository<Student>,
+    private readonly usersService: UsersService,
   ) { }
 
-  async create(createStudentDto: CreateStudentDto) {
+  async create(createStudentDto: CreateStudentDto, currentUser: AuthUser) {
     await this.checkIfStudentExists(createStudentDto);
 
-    const newStudent = this.studentRepo.create(createStudentDto)
+    const user = await this.usersService.findOne(currentUser.userId);
+
+    const newStudent = this.studentRepo.create({
+      ...createStudentDto,
+      createdBy: user,
+    });
 
     const savedStudent = await this.studentRepo.save(newStudent);
 

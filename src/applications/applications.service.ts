@@ -55,11 +55,11 @@ export class ApplicationsService {
       .where(new Brackets(qb => {
         queryDto.createdAt && qb.andWhere('application.createdAt >= :createdAt', { createdAt: queryDto.createdAt })
         queryDto.ackNo && qb.andWhere('application.ackNo = :ackNo', { ackNo: queryDto.ackNo })
-        queryDto.country && qb.andWhere('LOWER(country.name) LIKE LOWER(:country)', { country: `%${queryDto.country}%` })
-        queryDto.universityId && qb.andWhere('university.id = :universityId', { universityId: queryDto.universityId })
+        queryDto.countryIds && qb.andWhere('country.id IN (:...countryIds)', { countryIds: queryDto.countryIds })
         queryDto.intakeMonths && qb.andWhere('intakes.month IN (:...months)', { months: queryDto.intakeMonths })
         queryDto.intakeYears && qb.andWhere('intakes.year IN (:...years)', { years: queryDto.intakeYears })
         queryDto.statuses && qb.andWhere('application.status IN (:...statuses)', { statuses: queryDto.statuses })
+        queryDto.universityId && qb.andWhere('university.id = :universityId', { universityId: queryDto.universityId })
         queryDto.courseName && qb.andWhere('LOWER(course.name) ILIKE LOWER(:courseName)', { courseName: `%${queryDto.courseName}%` })
         queryDto.search && qb.andWhere("LOWER(CONCAT(student.firstName, ' ', student.middleName, ' ', student.lastName)) LIKE LOWER(:search)", { search: `%${queryDto.studentName}%` })
       }))

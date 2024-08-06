@@ -12,10 +12,10 @@ export class ApplicationQueryDto extends QueryDto {
     @IsOptional()
     createdAt: string;
 
-    @ApiPropertyOptional({ enum: ECountry })
-    @IsString()
+    @ApiPropertyOptional({ format: 'uuid' })
     @IsOptional()
-    country: string;
+    @Transform(({ value }) => value.split(','))
+    countryIds: string;
 
     @ApiPropertyOptional({ format: 'uuid' })
     @IsString()
@@ -23,13 +23,11 @@ export class ApplicationQueryDto extends QueryDto {
     universityId: string;
 
     @ApiPropertyOptional({ enum: EMonth })
-    @IsString()
     @IsOptional()
     @Transform(({ value }) => value.split(',')) // format: 'january,february,march'
     intakeMonths: string[];
 
     @ApiPropertyOptional()
-    @IsString()
     @IsOptional()
     @Transform(({ value }) => {
         const yearArr = value?.split(',')?.map((year: string) => isNaN(Number(year)) ? null : Number(year))?.filter(Boolean);
@@ -38,7 +36,6 @@ export class ApplicationQueryDto extends QueryDto {
     intakeYears: number[]
 
     @ApiPropertyOptional()
-    @IsString()
     @IsOptional()
     @Transform(({ value }) => value.split(','))
     statuses: EApplicationStatus[];

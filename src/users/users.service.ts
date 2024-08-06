@@ -30,6 +30,7 @@ export class UsersService {
       .withDeleted()
       .where({ deletedAt })
       .leftJoin("user.account", "account")
+      .leftJoin("account.company", "company")
       .leftJoin("user.profileImage", "profileImage")
       .andWhere(new Brackets(qb => {
         queryDto.role && qb.andWhere('account.role = :role', { role: queryDto.role });
@@ -37,6 +38,7 @@ export class UsersService {
       .select([
         'account.firstName', 'account.lastName', 'account.email', 'account.role', 'account.isVerified',
         'user.id', 'user.phone', 'user.gender', 'user.dob', 'profileImage.id', 'profileImage.url', 'user.createdAt',
+        'company.id', 'company.name'
       ])
 
     return paginatedData(queryDto, queryBuilder);

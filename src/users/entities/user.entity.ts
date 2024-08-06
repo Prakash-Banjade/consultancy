@@ -23,7 +23,7 @@ export class User extends BaseEntity {
 
     @OneToOne(() => Account, account => account.user, { nullable: true })
     account: Account
-    
+
     @OneToOne(() => Counselor, counselor => counselor.user, { nullable: true })
     counselor: Counselor
 

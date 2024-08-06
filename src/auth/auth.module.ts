@@ -11,6 +11,7 @@ import { PasswordChangeRequest } from './entities/password-change-request.entity
 import { EmailVerificationPending } from './entities/email-verification-pending.entity';
 import { AuthRepository } from './repository/auth.repository';
 import { ImagesModule } from 'src/images/images.module';
+import { CompaniesModule } from 'src/companies/companies.module';
 require('dotenv').config();
 
 @Module({
@@ -24,6 +25,7 @@ require('dotenv').config();
     AccountsModule,
     UsersModule,
     ImagesModule,
+    CompaniesModule,
   ],
   controllers: [AuthController],
   providers: [

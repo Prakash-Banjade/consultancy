@@ -1,5 +1,12 @@
+import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword, Length } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsStrongPassword, IsUUID, Length } from "class-validator";
+
+export enum AssignableRoles {
+    ADMIN = 'admin',
+    USER = 'user',
+}
 
 export class RegisterDto {
     @ApiProperty({ type: 'string', description: 'First name of the user' })
@@ -23,4 +30,14 @@ export class RegisterDto {
     @IsString()
     @IsStrongPassword()
     password!: string;
+
+    @ApiProperty({ format: 'uuid' })
+    @IsUUID()
+    @IsNotEmpty()
+    companyId: string;
+
+    @ApiProperty({ enum: AssignableRoles })
+    @IsEnum(AssignableRoles)
+    @IsNotEmpty()
+    role: AssignableRoles
 }

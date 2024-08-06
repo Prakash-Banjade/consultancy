@@ -12,10 +12,11 @@ import { Throttle } from '@nestjs/throttler';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { EmailVerificationDto } from './dto/email-verification.dto';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { AuthUser } from 'src/core/types/global.types';
+import { Action, AuthUser } from 'src/core/types/global.types';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CurrentUser } from 'src/core/decorators/user.decorator';
 import { VerifyResetTokenDto } from './dto/verify-reset-token.dto';
+import { ChekcAbilities } from 'src/core/decorators/abilities.decorator';
 require('dotenv').config();
 
 @ApiTags('Authentication')
@@ -30,16 +31,8 @@ export class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
     }
 
-    accessCookieOptions: CookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
-        maxAge: 15 * 60 * 1000, // 15 min
-    }
-
     private readonly ACCESS_TOKEN_KEY = 'access_token';
     private readonly REFRESH_TOKEN_KEY = 'refresh_token';
-    private readonly REFRESH_HEADER_KEY = process.env.REFRESH_HEADER_KEY
 
     @Public()
     @HttpCode(HttpStatus.OK)
@@ -47,13 +40,11 @@ export class AuthController {
     @ApiConsumes('multipart/form-data')
     @FormDataRequest()
     async signIn(@Body() signInDto: SignInDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
-        const { access_token, new_refresh_token, payload } = await this.authService.signIn(signInDto, req, res, this.refresshCookieOptions);
+        const { access_token, new_refresh_token } = await this.authService.signIn(signInDto, req, res, this.refresshCookieOptions);
 
-        res.cookie(this.ACCESS_TOKEN_KEY, access_token, this.refresshCookieOptions);
         res.cookie(this.REFRESH_TOKEN_KEY, new_refresh_token, this.refresshCookieOptions);
-        res.set(this.REFRESH_HEADER_KEY, `${new_refresh_token}`);
 
-        return { access_token, refreshToken: new_refresh_token, payload };
+        return { access_token, refreshToken: new_refresh_token };
     }
 
     @Public()
@@ -67,26 +58,20 @@ export class AuthController {
         const refresh_token = req.cookies?.refresh_token;
         if (!refresh_token) throw new UnauthorizedException();
 
-        res.clearCookie(this.ACCESS_TOKEN_KEY, this.accessCookieOptions); // CLEAR COOKIE, BCZ A NEW ONE IS TO BE GENERATED
         res.clearCookie(this.REFRESH_TOKEN_KEY, this.refresshCookieOptions); // CLEAR COOKIE, BCZ A NEW ONE IS TO BE GENERATED
-        res.removeHeader(this.REFRESH_HEADER_KEY);
 
-        const { new_access_token, new_refresh_token, payload } = await this.authService.refresh(refresh_token);
+        const { new_access_token, new_refresh_token } = await this.authService.refresh(refresh_token);
 
-        res.cookie(this.ACCESS_TOKEN_KEY, new_access_token, this.accessCookieOptions);
         res.cookie(this.REFRESH_TOKEN_KEY, new_refresh_token, this.refresshCookieOptions);
-        res.set(this.REFRESH_HEADER_KEY, `${new_refresh_token}`);
 
-        return { access_token: new_access_token, refresh_token: new_refresh_token, payload };
+        return { access_token: new_access_token, refresh_token: new_refresh_token };
     }
 
-    @Public()
     @Post('register')
-    @ApiConsumes('multipart/form-data')
-    @FormDataRequest()
     @UseInterceptors(TransactionInterceptor)
-    async register(@Body() registerDto: RegisterDto) {
-        return await this.authService.register(registerDto);
+    @ChekcAbilities({ subject: 'all', action: Action.CREATE })
+    async register(@Body() registerDto: RegisterDto, @CurrentUser() currentUser: AuthUser) {
+        return await this.authService.register(registerDto, currentUser);
     }
 
     @Public()
@@ -111,9 +96,7 @@ export class AuthController {
 
         await this.authService.logout(refresh_token);
 
-        res.clearCookie(this.ACCESS_TOKEN_KEY, this.accessCookieOptions);
         res.clearCookie(this.REFRESH_TOKEN_KEY, this.refresshCookieOptions);
-        res.removeHeader(this.REFRESH_HEADER_KEY);
         return;
     }
 

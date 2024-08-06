@@ -1,19 +1,23 @@
 import { BaseEntity } from "src/core/entities/base.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { AuthProvider, Roles } from "src/core/types/global.types";
 import { BadRequestException } from "@nestjs/common";
 import { User } from "src/users/entities/user.entity";
 import { Image } from "src/images/entities/image.entity";
 import { File } from "src/files/entities/file.entity";
+import { Company } from "src/companies/entities/company.entity";
 
 @Entity()
 export class Account extends BaseEntity {
     @Column({ type: 'varchar' })
     firstName!: string;
 
-    @Column({ type: 'varchar', default: '' })
-    lastName?: string;
+    @Column({ type: 'varchar', nullable: true })
+    middleName: string;
+
+    @Column({ type: 'varchar' })
+    lastName: string;
 
     @Column({ type: 'varchar' })
     email!: string;
@@ -42,7 +46,15 @@ export class Account extends BaseEntity {
 
     @OneToMany(() => File, file => file.uploadedBy)
     files: File[]
-    
+
+    @ManyToOne(() => Company, company => company.accounts, { nullable: true })
+    company: Company;
+
+    @BeforeInsert()
+    validateCompany() {
+        if (this.role !== Roles.SUPER_ADMIN && !this.company) throw new BadRequestException('Company is required');
+    }
+
     @BeforeInsert()
     hashPassword() {
         if (!this.password) throw new BadRequestException('Password required');

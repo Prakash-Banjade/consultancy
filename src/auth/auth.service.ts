@@ -8,14 +8,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { SignInDto } from './dto/signIn.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { CookieOptions, Request, Response } from 'express';
-import { AuthProvider, AuthUser } from 'src/core/types/global.types';
+import { AuthUser, Roles } from 'src/core/types/global.types';
 import { Account } from 'src/accounts/entities/account.entity';
 import { User } from 'src/users/entities/user.entity';
 import { AccountsRepository } from 'src/accounts/repository/account.repository';
@@ -28,10 +28,7 @@ import { EmailVerificationDto } from './dto/email-verification.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { generateOtp } from 'src/core/utils/generateOPT';
 import { UsersRepository } from 'src/users/repository/users.repository';
-import { Credentials, OAuth2Client } from 'google-auth-library';
-import { GoogleOAuthDto } from './dto/googleOAuth.dto';
-import { Image } from 'src/images/entities/image.entity';
-import { ImagesService } from 'src/images/images.service';
+import { CompaniesService } from 'src/companies/companies.service';
 require('dotenv').config();
 
 @Injectable()
@@ -46,13 +43,9 @@ export class AuthService {
     @InjectRepository(PasswordChangeRequest) private passwordChangeRequestRepo: Repository<PasswordChangeRequest>,
     @InjectRepository(EmailVerificationPending) private emailVerificationPendingRepo: Repository<EmailVerificationPending>,
     private readonly mailService: MailService,
-    private readonly imagesService: ImagesService,
+    private readonly companiesService: CompaniesService,
   ) { }
 
-  private readonly clientId = process.env.GOOGLE_CLIENT_ID;
-  private readonly clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  private readonly redirectUri = process.env.GOOGLE_REDIRECT_URI
-  private readonly oAuth2Client = new OAuth2Client(this.clientId, this.clientSecret, this.redirectUri);
 
   async signIn(signInDto: SignInDto, req: Request, res: Response, cookieOptions: CookieOptions) {
     const refresh_token = req.cookies?.refresh_token;
@@ -64,6 +57,7 @@ export class AuthService {
       },
       relations: {
         user: true,
+        company: true,
       }
     });
 
@@ -85,6 +79,7 @@ export class AuthService {
       userId: foundAccount.user.id,
       name: foundAccount.firstName + ' ' + foundAccount.lastName,
       role: foundAccount.role,
+      companyId: foundAccount.company.id,
     };
 
     const access_token = await this.createAccessToken(payload);
@@ -98,92 +93,6 @@ export class AuthService {
     await this.accountsRepo.save(foundAccount);
 
     return { access_token, new_refresh_token, payload };
-  }
-
-  async googleOAuthLogin(googleOAuthDto: GoogleOAuthDto, req: Request, res: Response, cookieOptions: CookieOptions) {
-    const refresh_token = req.cookies?.refresh_token;
-    if (refresh_token) res.clearCookie('refresh_token', cookieOptions); // CLEAR COOKIE, BCZ A NEW ONE IS TO BE GENERATED
-
-    const { code } = googleOAuthDto;
-
-    const { tokens } = await this.oAuth2Client.getToken(code); // exchange code for tokens
-
-    const { email, family_name, given_name, picture, email_verified } = await this.getGoogleUser(tokens);
-    if (!email_verified) throw new BadRequestException('Email not verified');
-
-    // SEARCH FOR THE ACCOUNT IN DB
-    const foundAccount = await this.accountsRepo.findOne({
-      where: { email },
-      relations: { user: true }
-    });
-    let payload: AuthUser;
-    let access_token: string;
-    let new_refresh_token: string;
-
-    // IF NOT FOUND, CREATE A NEW ACCOUNT
-    if (!foundAccount) {
-      const newAccount = this.accountsRepo.create({
-        email,
-        firstName: given_name,
-        lastName: family_name ?? '',
-        provider: AuthProvider.GOOGLE,
-        isVerified: email_verified,
-        password: null,
-      })
-
-      const savedAccount = await this.accountRepository.insert(newAccount);
-
-      // save image in db
-      const image = picture ? await this.imagesService.saveImageFromUrl(picture) : null;
-
-      const newUser = this.usersRepo.create({
-        account: savedAccount,
-        profileImage: image,
-      })
-
-      const savedUser = await this.userRepository.createUser(newUser);
-
-      payload = {
-        email: savedAccount.email,
-        accountId: savedAccount.id,
-        userId: savedUser.id,
-        name: savedAccount.firstName,
-        role: savedAccount.role,
-      }
-
-      // GENERATE TOKENS WITH ABOVE PAYLOAD
-      access_token = await this.createAccessToken(payload);
-      new_refresh_token = await this.createRefreshToken(payload);
-
-      savedAccount.refresh_token = [new_refresh_token];
-      await this.accountRepository.insert(savedAccount);
-
-    } else {
-      payload = {
-        email: foundAccount.email,
-        userId: foundAccount.user.id,
-        accountId: foundAccount.id,
-        name: foundAccount.firstName + ' ' + foundAccount.lastName,
-        role: foundAccount.role,
-      }
-
-      // GENERATE TOKENS WITH ABOVE PAYLOAD
-      access_token = await this.createAccessToken(payload);
-      new_refresh_token = await this.createRefreshToken(payload);
-
-      const newRefreshTokenArray = !refresh_token ? (foundAccount.refresh_token ?? []) : (foundAccount?.refresh_token?.filter((rt) => rt !== refresh_token) ?? [])
-
-      foundAccount.refresh_token = [...newRefreshTokenArray, new_refresh_token];
-
-      await this.accountRepository.insert(foundAccount);
-    }
-
-    return { access_token, new_refresh_token, payload };
-  }
-
-  private async getGoogleUser(tokens: Credentials) {
-    const loginTicket = await this.oAuth2Client.verifyIdToken({ idToken: tokens.id_token, audience: process.env.GOOGLE_CLIENT_ID });
-    return loginTicket.getPayload()
   }
 
   async createAccessToken(payload: AuthUser) {
@@ -201,12 +110,17 @@ export class AuthService {
     );
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto, currentUser: AuthUser) {
     const foundAccount = await this.accountsRepo.findOneBy({
       email: registerDto.email,
     });
 
     if (foundAccount && foundAccount.isVerified) throw new ConflictException('User with this email already exists');
+
+    // if user is super admin, then can assign user to any company, else if user is admin, then can only assign user to his company
+    const company = await this.companiesService.findOne(
+      currentUser.role === Roles.SUPER_ADMIN ? registerDto.companyId : currentUser.companyId
+    );
 
     let account: Account;
 
@@ -215,11 +129,16 @@ export class AuthService {
       const newAccount = Object.assign(foundAccount, {
         ...registerDto,
         password: hashedPassword,
+        company,
       });
       account = await this.accountRepository.insert(newAccount);
       await this.authRepository.removeVerificationEmailPending(foundAccount.email); // remove email_verification_pending if exist
     } else {
-      const newAccount = this.accountsRepo.create(registerDto);
+      const newAccount = this.accountsRepo.create({
+        ...registerDto,
+        role: registerDto.role as unknown as Roles,
+        company,
+      });
       account = await this.accountRepository.insert(newAccount); // ensure transaction
     }
 
@@ -298,7 +217,8 @@ export class AuthService {
     const foundAccount = await this.accountsRepo.findOne({
       where: { refresh_token: Like(`%${refresh_token}%`) },
       relations: {
-        user: true
+        user: true,
+        company: true,
       }
     });
 
@@ -336,6 +256,7 @@ export class AuthService {
     const payload: AuthUser = {
       email: foundAccount.email,
       accountId: foundAccount.id,
+      companyId: foundAccount.company.id,
       userId: foundAccount.user.id,
       name: foundAccount.firstName + ' ' + foundAccount.lastName,
       role: foundAccount.role,

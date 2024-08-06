@@ -18,5 +18,6 @@ import { CompanyBankingDetailsController } from './companyBankingDetails.control
   ],
   controllers: [CompaniesController, CompanyBankingDetailsController],
   providers: [CompaniesService, CompanyBankingDetailsService],
+  exports: [CompaniesService],
 })
 export class CompaniesModule { }

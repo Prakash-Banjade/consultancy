@@ -9,6 +9,7 @@ export enum Roles {
 export interface AuthUser {
     userId: string;
     accountId: string;
+    companyId: string;
     name: string;
     email: string;
     role: Roles;

@@ -4,6 +4,7 @@ import { ApplicationsModule } from "src/applications/applications.module";
 import { AuthModule } from "src/auth/auth.module";
 import { BritishCounsilModule } from "src/british-counsil/british-counsil.module";
 import { CategoriesModule } from "src/categories/categories.module";
+import { CompaniesModule } from "src/companies/companies.module";
 import { CounselorsModule } from "src/counselors/counselors.module";
 import { CountriesModule } from "src/countries/countries.module";
 import { CoursesModule } from "src/courses/courses.module";
@@ -48,6 +49,7 @@ export function setupSwagger(app: INestApplication): void {
             WorkExperiencesModule,
             ApplicationsModule,
             CounselorsModule,
+            CompaniesModule,
         ],
     });
 

@@ -3,7 +3,7 @@ import { ImagesService } from './images.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { AuthUser } from 'src/core/types/global.types';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FormDataRequest } from 'nestjs-form-data';
 import { CurrentUser } from 'src/core/decorators/user.decorator';
 import { QueryDto } from 'src/core/dto/query.dto';
@@ -17,6 +17,7 @@ export class ImagesController {
   constructor(private readonly imagesService: ImagesService) { }
 
   @Post()
+  @ApiConsumes('multipart/form-data')
   @FormDataRequest()
   upload(@Body() createImageDto: CreateImageDto, @CurrentUser() currentUser: AuthUser) {
     return this.imagesService.upload(createImageDto, currentUser);
@@ -39,6 +40,7 @@ export class ImagesController {
   // }
 
   @Patch(':id')
+  @ApiConsumes('multipart/form-data')
   @FormDataRequest()
   update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto, @CurrentUser() currentUser: AuthUser) {
     return this.imagesService.update(id, updateImageDto, currentUser);

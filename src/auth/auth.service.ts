@@ -79,7 +79,7 @@ export class AuthService {
       userId: foundAccount.user.id,
       name: foundAccount.firstName + ' ' + foundAccount.lastName,
       role: foundAccount.role,
-      companyId: foundAccount.company.id,
+      companyId: foundAccount.role === Roles.SUPER_ADMIN ? null : foundAccount.company.id,
     };
 
     const access_token = await this.createAccessToken(payload);
@@ -256,7 +256,7 @@ export class AuthService {
     const payload: AuthUser = {
       email: foundAccount.email,
       accountId: foundAccount.id,
-      companyId: foundAccount.company.id,
+      companyId: foundAccount.role === Roles.SUPER_ADMIN ? null : foundAccount.company.id,
       userId: foundAccount.user.id,
       name: foundAccount.firstName + ' ' + foundAccount.lastName,
       role: foundAccount.role,

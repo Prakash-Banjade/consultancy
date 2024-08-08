@@ -4,7 +4,7 @@ import { CreateCounselorDto } from './dto/create-counselor.dto';
 import { UpdateCounselorDto } from './dto/update-counselor.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ChekcAbilities } from 'src/core/decorators/abilities.decorator';
-import { Action, AuthUser } from 'src/core/types/global.types';
+import { Action, AuthUser, Roles } from 'src/core/types/global.types';
 import { CounselorQueryDto } from './dto/counselor-query.dto';
 import { TransactionInterceptor } from 'src/core/interceptors/transaction.interceptor';
 import { CurrentUser } from 'src/core/decorators/user.decorator';
@@ -17,7 +17,7 @@ export class CounselorsController {
 
   @Post()
   @UseInterceptors(TransactionInterceptor)
-  @ChekcAbilities({ subject: 'admin', action: Action.CREATE })
+  @ChekcAbilities({ subject: Roles.ADMIN, action: Action.CREATE })
   create(@Body() createCounselorDto: CreateCounselorDto, @CurrentUser() currentUser: AuthUser) {
     return this.counselorsService.create(createCounselorDto, currentUser);
   }

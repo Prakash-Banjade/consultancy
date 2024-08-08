@@ -5,7 +5,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CompanyQueryDto } from './dto/company-query.dto';
 import { ChekcAbilities } from 'src/core/decorators/abilities.decorator';
-import { Action } from 'src/core/types/global.types';
+import { Action, Roles } from 'src/core/types/global.types';
 
 @ApiBearerAuth()
 @ApiTags('Companies')
@@ -14,7 +14,7 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) { }
 
   @Post()
-  @ChekcAbilities({ subject: 'admin', action: Action.CREATE })
+  @ChekcAbilities({ subject: Roles.ADMIN, action: Action.CREATE })
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }

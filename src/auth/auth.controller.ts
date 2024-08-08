@@ -12,7 +12,7 @@ import { Throttle } from '@nestjs/throttler';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { EmailVerificationDto } from './dto/email-verification.dto';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { Action, AuthUser } from 'src/core/types/global.types';
+import { Action, AuthUser, Roles } from 'src/core/types/global.types';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { CurrentUser } from 'src/core/decorators/user.decorator';
 import { VerifyResetTokenDto } from './dto/verify-reset-token.dto';
@@ -40,11 +40,11 @@ export class AuthController {
     @ApiConsumes('multipart/form-data')
     @FormDataRequest()
     async signIn(@Body() signInDto: SignInDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
-        const { access_token, new_refresh_token } = await this.authService.signIn(signInDto, req, res, this.refresshCookieOptions);
+        const { access_token, new_refresh_token, payload } = await this.authService.signIn(signInDto, req, res, this.refresshCookieOptions);
 
         res.cookie(this.REFRESH_TOKEN_KEY, new_refresh_token, this.refresshCookieOptions);
 
-        return { access_token, refreshToken: new_refresh_token };
+        return { access_token, refreshToken: new_refresh_token, payload };
     }
 
     @Public()
@@ -69,7 +69,7 @@ export class AuthController {
 
     @Post('register')
     @UseInterceptors(TransactionInterceptor)
-    @ChekcAbilities({ subject: 'all', action: Action.CREATE })
+    @ChekcAbilities({ subject: Roles.ADMIN, action: Action.CREATE })
     async register(@Body() registerDto: RegisterDto, @CurrentUser() currentUser: AuthUser) {
         return await this.authService.register(registerDto, currentUser);
     }

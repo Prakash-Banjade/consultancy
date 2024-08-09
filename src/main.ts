@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: ['http://client.com'],
+    origin: ['http://localhost:5173'],
     credentials: true,
     optionsSuccessStatus: 200,
     preflightContinue: false, // enforce CORS policy consistently across the application's endpoints.

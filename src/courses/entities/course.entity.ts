@@ -50,8 +50,8 @@ export class Course extends BaseEntity {
     @Column({ type: 'simple-array' })
     paymentTerms: string[]
 
-    @Column({ type: 'varchar' })
-    duration: string;
+    @Column({ type: 'float' })
+    duration: number;
 
     @OneToMany(() => Intake, intake => intake.course)
     intakes: Intake[];

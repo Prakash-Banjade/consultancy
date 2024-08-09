@@ -13,8 +13,8 @@ export class CreateCounselorDto {
     middleName?: string;
 
     @ApiProperty()
-    @IsNotEmpty()
     @IsString()
+    @IsOptional()
     lastName: string;
 
     @ApiProperty()

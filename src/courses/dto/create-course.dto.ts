@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
-import { ArrayMinSize, IsArray, IsDefined, IsNotEmpty, IsNumber, IsString, IsUrl, IsUUID, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsDefined, IsNotEmpty, IsNumber, IsString, IsUrl, IsUUID, Min, ValidateNested } from "class-validator";
 import { CreateIntakeDto } from "./intake.dto";
 import { Type } from "class-transformer";
 
@@ -77,10 +77,11 @@ export class CreateCourseDto {
     @IsString({ each: true })
     paymentTerms: string[]
 
-    @ApiProperty()
+    @ApiProperty({ description: 'Duration in months' })
     @IsNotEmpty()
-    @IsString()
-    duration: string;
+    @IsNumber()
+    @Min(12, { message: 'Duration must be at least 12 months' })
+    duration: number;
 
     // @ApiProperty({ type: [IntakeDto], isArray: true })
     // @ValidateNested({ each: true })

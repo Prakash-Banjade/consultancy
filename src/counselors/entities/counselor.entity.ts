@@ -10,7 +10,7 @@ export class Counselor extends BaseEntity {
     @Column({ type: 'varchar', nullable: true })
     middleName: string;
 
-    @Column({ type: 'varchar' })
+    @Column({ type: 'varchar', default: '' })
     lastName: string;
 
     @Column('varchar')

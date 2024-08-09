@@ -22,25 +22,25 @@ export class StudentsController {
 
   @Get()
   @ChekcAbilities({ subject: 'all', action: Action.READ })
-  findAll(@Query() queryDto: StudentQueryDto) {
-    return this.studentsService.findAll(queryDto);
+  findAll(@Query() queryDto: StudentQueryDto, @CurrentUser() currentUser: AuthUser) {
+    return this.studentsService.findAll(queryDto, currentUser);
   }
 
   @Get(':id')
   @ChekcAbilities({ subject: 'all', action: Action.READ })
-  findOne(@Param('id') id: string) {
-    return this.studentsService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: AuthUser) {
+    return this.studentsService.findOne(id, currentUser);
   }
 
   @Patch(':id')
   @ChekcAbilities({ subject: 'all', action: Action.UPDATE })
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(id, updateStudentDto);
+  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto, @CurrentUser() currentUser: AuthUser) {
+    return this.studentsService.update(id, updateStudentDto, currentUser);
   }
 
   @Delete(':id')
   @ChekcAbilities({ subject: 'all', action: Action.DELETE })
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(id);
+  remove(@Param('id') id: string, @CurrentUser() currentUser: AuthUser) {
+    return this.studentsService.remove(id, currentUser);
   }
 }

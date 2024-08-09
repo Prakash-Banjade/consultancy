@@ -8,7 +8,7 @@ import { StudentQueryDto } from './dto/student-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
 import { studentSelectCols } from './entities/student-select-cols.config';
 import { UsersService } from 'src/users/users.service';
-import { AuthUser } from 'src/core/types/global.types';
+import { AuthUser, Roles } from 'src/core/types/global.types';
 
 @Injectable()
 export class StudentsService {
@@ -18,7 +18,7 @@ export class StudentsService {
   ) { }
 
   async create(createStudentDto: CreateStudentDto, currentUser: AuthUser) {
-    await this.checkIfStudentExists(createStudentDto);
+    await this.checkIfStudentExists(createStudentDto, currentUser);
 
     const user = await this.usersService.findOne(currentUser.userId);
 
@@ -32,7 +32,7 @@ export class StudentsService {
     return this.studentMutationReturn(savedStudent, 'create');
   }
 
-  async findAll(queryDto: StudentQueryDto) {
+  async findAll(queryDto: StudentQueryDto, currentUser: AuthUser) {
     const querybuilder = this.studentRepo.createQueryBuilder('student')
 
     querybuilder
@@ -58,7 +58,7 @@ export class StudentsService {
     return paginatedData(queryDto, querybuilder)
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, currentUser: AuthUser) {
     const existingStudent = await this.studentRepo.findOne({
       where: { id },
       relations: {
@@ -87,10 +87,10 @@ export class StudentsService {
     return existingStudent;
   }
 
-  async update(id: string, updateStudentDto: UpdateStudentDto) {
-    const existing = await this.findOne(id);
+  async update(id: string, updateStudentDto: UpdateStudentDto, currentUser: AuthUser) {
+    const existing = await this.findOne(id, currentUser);
 
-    await this.checkIfStudentExists(updateStudentDto, existing);
+    await this.checkIfStudentExists(updateStudentDto, currentUser, existing);
 
     Object.assign(existing, {
       ...updateStudentDto,
@@ -100,22 +100,27 @@ export class StudentsService {
     return this.studentMutationReturn(existing, 'update');
   }
 
-  async remove(id: string) {
-    const existing = await this.findOne(id);
+  async remove(id: string, currentUser: AuthUser) {
+    const existing = await this.findOne(id, currentUser);
 
     return this.studentMutationReturn(await this.studentRepo.remove(existing), 'delete');
   }
 
-  private async checkIfStudentExists(studentDto: CreateStudentDto | UpdateStudentDto, student?: Student) {
+  private async checkIfStudentExists(studentDto: CreateStudentDto | UpdateStudentDto, currentUser: AuthUser, student?: Student) {
     const { email, phoneNumber } = studentDto;
+    const companyId = currentUser.role === Roles.SUPER_ADMIN ? undefined : currentUser.companyId;
 
     const existingStudent = await this.studentRepo.createQueryBuilder('student')
+      .leftJoin('student.createdBy', 'createdBy')
+      .leftJoin('createdBy.account', 'account')
+      .leftJoin('account.company', 'company')
       .where(new Brackets(qb => {
         qb.where([
           { email },
           { phoneNumber }
         ])
         student?.id && qb.andWhere({ id: Not(student.id) })
+        qb.andWhere({ 'company.id': companyId })
       })).getOne();
 
     if (existingStudent && !student) {

@@ -5,6 +5,7 @@ import { Account } from "src/accounts/entities/account.entity";
 import { EGender } from "src/core/types/global.types";
 import { Student } from "src/students/entities/student.entity";
 import { Counselor } from "src/counselors/entities/counselor.entity";
+import { Application } from "src/applications/entities/application.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -29,4 +30,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Student, student => student.createdBy)
     createdStudents: Student[]
+
+    @OneToMany(() => Application, application => application.createdBy)
+    createdApplications: Application[]
 }

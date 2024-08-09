@@ -4,6 +4,7 @@ import { EMonth } from "src/core/types/months.types";
 import { generateAckNo } from "src/core/utils/generate-ack-no";
 import { Course } from "src/courses/entities/course.entity";
 import { Student } from "src/students/entities/student.entity";
+import { User } from "src/users/entities/user.entity";
 import { BeforeInsert, Column, Entity, ManyToOne } from "typeorm";
 
 @Entity()
@@ -34,4 +35,6 @@ export class Application extends BaseEntity {
     @ManyToOne(() => Student, student => student.applications)
     student: Student;
 
+    @ManyToOne(() => User, user => user.createdApplications, { onDelete: 'SET NULL' })
+    createdBy: User
 }

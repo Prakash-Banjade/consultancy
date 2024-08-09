@@ -20,13 +20,13 @@ export class UniversitiesController {
   }
 
   @Get()
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findAll(@Query() queryDto: QueryDto) {
     return this.universitiesService.findAll(queryDto);
   }
 
   @Get(':id')
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findOne(@Param('id') id: string) {
     return this.universitiesService.findOne(id);
   }

@@ -20,13 +20,13 @@ export class CountriesController {
   }
 
   @Get()
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findAll(@Query() queryDto: QueryDto) {
     return this.countriesService.findAll(queryDto);
   }
 
   @Get(':id')
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findOne(@Param('id') id: string) {
     return this.countriesService.findOne(id);
   }

@@ -8,6 +8,7 @@ import { Brackets, Repository } from 'typeorm';
 import { ApplicationQueryDto } from './dto/application-query.dto';
 import paginatedData from 'src/core/utils/paginatedData';
 import { StudentsService } from 'src/students/students.service';
+import { AuthUser } from 'src/core/types/global.types';
 
 @Injectable()
 export class ApplicationsService {
@@ -17,8 +18,8 @@ export class ApplicationsService {
     private readonly studentsService: StudentsService,
   ) { }
 
-  async create(createApplicationDto: CreateApplicationDto) {
-    const student = await this.studentsService.findOne(createApplicationDto.studentId)
+  async create(createApplicationDto: CreateApplicationDto, currentUser: AuthUser) {
+    const student = await this.studentsService.findOne(createApplicationDto.studentId, currentUser)
 
     const course = await this.courseRepo.findOne({
       where: {
@@ -42,7 +43,7 @@ export class ApplicationsService {
     return this.applicationMutationReturn(saved, 'create');
   }
 
-  async findAll(queryDto: ApplicationQueryDto) {
+  async findAll(queryDto: ApplicationQueryDto, currentUser: AuthUser) {
     const queryBuilder = this.applicationRepo.createQueryBuilder('application')
       .orderBy('application.createdAt', queryDto.order)
       .skip(queryDto.skip)
@@ -67,9 +68,18 @@ export class ApplicationsService {
     return paginatedData(queryDto, queryBuilder)
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, currentUser: AuthUser) {
     const existing = await this.applicationRepo.findOne({
-      where: { id },
+      where: {
+        id,
+        createdBy: {
+          account: {
+            company: {
+              id: currentUser.companyId
+            }
+          }
+        }
+      },
       relations: {
         student: true,
         course: {
@@ -82,8 +92,8 @@ export class ApplicationsService {
     return existing;
   }
 
-  async update(id: string, updateApplicationDto: UpdateApplicationDto) {
-    const existing = await this.findOne(id);
+  async update(id: string, updateApplicationDto: UpdateApplicationDto, currentUser: AuthUser) {
+    const existing = await this.findOne(id, currentUser);
 
     Object.assign(existing, updateApplicationDto);
 
@@ -92,8 +102,8 @@ export class ApplicationsService {
     return this.applicationMutationReturn(saved, 'update');
   }
 
-  async remove(id: string) {
-    const existing = await this.findOne(id);
+  async remove(id: string, currentUser: AuthUser) {
+    const existing = await this.findOne(id, currentUser);
 
     const removed = await this.applicationRepo.remove(existing);
 

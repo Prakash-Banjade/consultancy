@@ -20,13 +20,13 @@ export class CategoriesController {
   }
 
   @Get()
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findAll(@Query() queryDto: QueryDto) {
     return this.categoriesService.findAll(queryDto);
   }
 
   @Get(':id')
-  @ChekcAbilities({ subject: 'all', action: Action.READ })
+  // @ChekcAbilities({ subject: 'all', action: Action.READ })
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
   }

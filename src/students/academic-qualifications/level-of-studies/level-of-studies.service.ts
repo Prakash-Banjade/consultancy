@@ -14,6 +14,8 @@ export class LevelOfStudiesService {
   ) { }
 
   async create(createLevelOfStudyDto: CreateLevelOfStudyDto) {
+    this.validateStartAndEndDates(createLevelOfStudyDto);
+
     // check if student exists
     const student = await this.studentRepo.findOne({
       where: {
@@ -51,6 +53,20 @@ export class LevelOfStudiesService {
 
   }
 
+  private validateStartAndEndDates(createPersonalInfoDto: CreateLevelOfStudyDto | UpdateLevelOfStudyDto, existingPersonalInfo?: LevelOfStudy) {
+    const today = new Date();
+    const startDate = new Date(createPersonalInfoDto.startDate || existingPersonalInfo.startDate);
+    const endDate = new Date(createPersonalInfoDto.endDate || existingPersonalInfo.endDate);
+
+    if (endDate > today) throw new BadRequestException('End date can not be greater than today');
+
+    if (endDate < startDate) throw new BadRequestException('Start date can not be greater than end date');
+
+    const gap = startDate.getTime() - endDate.getTime();
+
+    if (gap < 1000 * 60 * 60 * 24 * 365) throw new BadRequestException('Start and end date should be atleast 1 year apart');
+  }
+
   async findAll() {
     return await this.levelOfStudyRepo.find();
   }
@@ -67,6 +83,8 @@ export class LevelOfStudiesService {
 
   async update(id: string, updateLevelOfStudyDto: UpdateLevelOfStudyDto) {
     const existing = await this.findOne(id)
+
+    this.validateStartAndEndDates(updateLevelOfStudyDto, existing);
 
     Object.assign(existing, updateLevelOfStudyDto);
 

@@ -14,6 +14,9 @@ export class PersonalInfosService {
   ) { }
 
   async create(createPersonalInfoDto: CreatePersonalInfoDto) {
+    // VALIDATE PASSPORT DATE
+    this.validatePassportDates(createPersonalInfoDto);
+
     const student = await this.studentRepo.findOneBy({ id: createPersonalInfoDto.studentId });
 
     const existingPersonalInfo = await this.personalInfoRepo.findOne({
@@ -37,6 +40,20 @@ export class PersonalInfosService {
     return this.personalInfoMutationReturn(savedPersonalInfo, 'create');
   }
 
+  private validatePassportDates(createPersonalInfoDto: CreatePersonalInfoDto | UpdatePersonalInfoDto, existingPersonalInfo?: PersonalInfo) {
+    const today = new Date();
+    const expiry = new Date(createPersonalInfoDto.passportExpiryDate || existingPersonalInfo.passportExpiryDate);
+    const issue = new Date(createPersonalInfoDto.passportIssueDate || existingPersonalInfo.passportIssueDate);
+
+    if (expiry < today) throw new BadRequestException('Passport has been expired');
+
+    if (issue > expiry) throw new BadRequestException('Passport issue date can not be greater than expiry date');
+
+    const gap = expiry.getTime() - issue.getTime();
+
+    if (gap < 1000 * 60 * 60 * 24 * 365 * 10) throw new BadRequestException('Passport issue and expiry date should be atleast 10 years apart');
+  }
+
   async findAll() {
     return this.personalInfoRepo.find();
   }
@@ -51,6 +68,9 @@ export class PersonalInfosService {
 
   async update(id: string, updatePersonalInfoDto: UpdatePersonalInfoDto) {
     const existingPersonalInfo = await this.findOne(id);
+
+    // VALIDATE PASSPORT DATE
+    this.validatePassportDates(updatePersonalInfoDto, existingPersonalInfo);
 
     if (updatePersonalInfoDto.passportNumber && updatePersonalInfoDto.passportNumber !== existingPersonalInfo.passportNumber) {
       const foundPersonalInfo = await this.personalInfoRepo.findOne({

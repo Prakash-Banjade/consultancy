@@ -1,5 +1,6 @@
+import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { ArrayMinSize, IsArray, IsDateString, IsDefined, IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID, ValidateNested } from "class-validator";
 import { CreateAddressDto } from "src/addresses/dto/create-address.dto";
 import { ECountry } from "src/core/types/countries.type";
@@ -30,6 +31,15 @@ export class CreatePersonalInfoDto {
     @ApiProperty({ format: 'date-time' })
     @IsNotEmpty()
     @IsDateString()
+    @Transform(({ value }) => {
+        const dobDate = new Date(value);
+        const today = new Date();
+        const gap = today.getTime() - dobDate.getTime();
+
+        if (gap < 1000 * 60 * 60 * 24 * 365 * 15) throw new BadRequestException('Must be 15 years old');
+
+        return value;
+    })
     dob: string;
 
     @ApiProperty({ enum: EGender })
